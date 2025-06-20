@@ -108,8 +108,6 @@ const Dashboard = () => {
       if (!res1.empty && !res1.docs[0].data().consensoDati) {
         setMostraConsenso(true);
         setCoppiaId(res1.docs[0].id);
-        setPartnerId(partnerIdTmp);
-        return; // fermati e mostra il modal
       }
 
       // salva id partner/coppia e lancia il thunk
