@@ -1,70 +1,137 @@
-# Getting Started with Create React App
+# 💸 Expense Tracker di Coppia – Progetto Finale Epicode
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Un'applicazione React completa per tracciare spese e entrate all'interno di una coppia, con gestione utenti, autenticazione, ticket di assistenza e dashboard amministrativa.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📖 Descrizione del progetto
 
-### `npm start`
+L'app nasce da un'esigenza reale: io e la mia fidanzata avevamo difficoltà a tenere traccia delle spese comuni. Da questo bisogno è nata l'idea di creare un'app per tenere tutto sotto controllo, e successivamente è stata sviluppata in modo più completo e professionale, rendendola deployabile su Netlify.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Il sistema prevede due ruoli:
+- 👤 **Utente**: inserisce e gestisce le proprie spese/entrate
+- 🛠 **Admin**: controlla lo stato generale dell'applicazione, visualizza movimenti aggregati, risponde ai ticket e gestisce gli utenti
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🚀 Link all'app online
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+👉 [https://expensetrackerprogettoepicode.netlify.app](https://expensetrackerprogettoepicode.netlify.app) *(link provvisorio da confermare)*
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 👤 Funzionalità lato utente
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Registrazione e login con Firebase Authentication
+- Inserimento della mail del partner per creazione coppia
+- Inserimento spese e entrate con dettagli
+- Visualizzazione della dashboard personale con grafici
+- Filtraggio e visualizzazione lista movimenti
+- Profilo utente con:
+  - Nome, città, indirizzo, cap, provincia, immagine profilo
+- Apertura ticket di assistenza
+- Consenso esplicito per il trattamento dati
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🛠 Funzionalità lato admin
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Visualizzazione lista utenti
+- Visualizzazione lista coppie
+- Accesso a tutti i movimenti (se consenso abilitato)
+- Risposta e gestione dei ticket inviati dagli utenti
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🧪 Tecnologie utilizzate
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **React** (con JSX)
+- **React Router DOM** (routing pubblico/privato e dinamico)
+- **Redux Toolkit** per stato globale
+- **Redux Thunk** per azioni asincrone (es. caricamento spese)
+- **Firebase**:
+  - Firestore (Database NoSQL)
+  - Authentication
+- **Bootstrap** + React-Bootstrap
+- **Chart.js** (grafici)
+- **API esterna**: [API città italiane](https://comuni-ita-api.vercel.app) per l’autocomplete nei form
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧩 Funzionalità implementate
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- ✔️ Routing protetto e dinamico
+- ✔️ Dashboard con grafici riepilogativi
+- ✔️ Sistema di ruoli (user/admin)
+- ✔️ Autenticazione Firebase
+- ✔️ Associazione tra partner
+- ✔️ Form controllati con validazione:
+  - Obbligatorietà campi
+  - Formati corretti
+  - Gestione errori
+- ✔️ Ticket di assistenza
+- ✔️ Chiamate asincrone con Redux Thunk
+- ✔️ Consumo API esterna
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🧪 Come usare l'app (senza installare nulla)
 
-### Analyzing the Bundle Size
+1. Vai su 👉 [https://expensetrackerprogettoepicode.netlify.app](https://expensetrackerprogettoepicode.netlify.app)
+2. Registrati inserendo i tuoi dati e la mail del tuo partner
+3. Il partner riceverà una mail per impostare la password
+4. Accedi con le credenziali
+5. Visualizza la dashboard e inizia a tracciare spese e entrate
+6. Puoi inserire ticket, modificare il tuo profilo, consultare statistiche
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🛠️ Come eseguire in locale
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+git clone https://github.com/TanaseSebastian/ProgettoFE_epicode.git
+cd ProgettoFE_epicode
+npm install
+npm start
+```
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🔐 Avviso importante sulla sicurezza
 
-### Deployment
+Per motivi di tempo, le credenziali Firebase sono attualmente presenti in chiaro nel file `firebase.js`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+⚠️ **Nota**: Sono consapevole che in ambienti reali andrebbero inserite come variabili di ambiente (es. `.env.local`) per proteggere i dati sensibili. Questo sarà il primo miglioramento post-consegna.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📦 Struttura progetto
+
+```
+src/
+├── components/        # Componenti riutilizzabili
+├── pages/             # Pagine principali (Login, Register, Dashboard...)
+├── tickets/           # Gestione ticket (form, lista, dettaglio)
+├── store/             # Redux slices e store centrale
+├── firebase.js          # Configurazione Firebase
+├── App.jsx            # Root component
+├── index.js           # Entry point
+```
+
+---
+
+## 🏆 extra
+
+- ✅ Uso di librerie grafiche (Bootstrap, Chart.js)
+- ✅ UX curata con grafici dinamici e layout responsive
+- ✅ Deploy effettuato su Netlify
+- ✅ Chiamata API esterna per città italiane
+- ✅ Routing avanzato con ruoli e protezioni
+
+---
+
+## 🙋‍♂️ Autore
+
+Realizzato da **Sebastian Tanase** – studente di Epicode, appassionato di sviluppo web.
+
+---

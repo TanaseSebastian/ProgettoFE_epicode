@@ -34,15 +34,26 @@ import {
   addUser,
   updateUser,
   deleteUser,
-} from "./store/usersSlice";
+} from "../store/usersSlice";
 import {
   fetchCouples,
   addCouple,
   updateCouple,
   deleteCouple,
-} from "./store/couplesSlice";
-import { fetchExpenses } from "./store/expensesSlice";
-import { logout } from "./store/authSlice";
+} from "../store/couplesSlice";
+import { fetchExpenses } from "../store/expensesSlice";
+import { logout } from "../store/authSlice";
+import {
+  collection,
+  query,
+  getDocs,
+  addDoc,
+  orderBy,
+  Timestamp,
+  doc, updateDoc
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { toast } from "react-toastify";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -51,6 +62,7 @@ const MENU = [
   { id: "users", label: "Utenti", icon: PeopleFill },
   { id: "couples", label: "Coppie", icon: HeartFill },
   { id: "expenses",  label: "Spese",      icon: CashStack },
+  { id: "tickets", label: "Ticket", icon: List },
 ];
 
 export default function AdminPanel() {
@@ -240,6 +252,123 @@ export default function AdminPanel() {
       })()}
     </Container>
   );
+
+
+      /* ----------------- TICKETS ----------------- */
+    const Tickets = () => {
+      const [tickets, setTickets] = useState([]);
+      const [selectedTicket, setSelectedTicket] = useState(null);
+      const [messages, setMessages] = useState([]);
+      const [reply, setReply] = useState("");
+
+      useEffect(() => {
+        const fetchTickets = async () => {
+          const snap = await getDocs(query(collection(db, "tickets"), orderBy("createdAt", "desc")));
+          setTickets(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        };
+        fetchTickets();
+      }, []);
+
+      const loadMessages = async (ticketId) => {
+        const msgSnap = await getDocs(query(collection(db, "tickets", ticketId, "messages"), orderBy("createdAt", "asc")));
+        setMessages(msgSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      };
+
+      const openTicket = async (ticket) => {
+        setSelectedTicket(ticket);
+        await loadMessages(ticket.id);
+      };
+
+      const handleReply = async () => {
+        if (!reply.trim()) return;
+        await addDoc(collection(db, "tickets", selectedTicket.id, "messages"), {
+          sender: "admin",
+          text: reply,
+          createdAt: Timestamp.now(),
+        });
+        setReply("");
+        await loadMessages(selectedTicket.id);
+      };
+
+      const closeTicket = async () => {
+        await updateDoc(doc(db, "tickets", selectedTicket.id), { status: "closed" });
+        toast.success("Ticket chiuso");
+        setSelectedTicket(null);
+        // refresh ticket list
+        const snap = await getDocs(query(collection(db, "tickets"), orderBy("createdAt", "desc")));
+        setTickets(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      };
+
+      if (selectedTicket) {
+        return (
+          <div>
+            <Button variant="secondary" onClick={() => setSelectedTicket(null)}>← Torna ai ticket</Button>
+            <h4 className="mt-3">{selectedTicket.subject}</h4>
+            <div className="mt-3 border rounded p-3 bg-light" style={{ maxHeight: 400, overflowY: "auto" }}>
+              {messages.map((m) => (
+                <div key={m.id} className={`mb-3 d-flex ${m.sender === "admin" ? "justify-content-end" : "justify-content-start"}`}>
+                  <div className={`p-2 rounded ${m.sender === "admin" ? "bg-primary text-white" : "bg-white border"}`} style={{ maxWidth: "75%" }}>
+                    <div className="fw-bold mb-1" style={{ fontSize: "0.85rem" }}>
+                      {m.sender === "admin" ? "Admin" : selectedTicket.email}
+                    </div>
+                    <div>{m.text}</div>
+                    <div className="mt-1 text-end" style={{ fontSize: "0.75rem", opacity: 0.6 }}>
+                      {new Date(m.createdAt.toDate()).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {selectedTicket.status === "open" && (
+              <>
+                <textarea
+                  className="form-control mt-3"
+                  rows="3"
+                  placeholder="Rispondi..."
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                />
+                <div className="d-flex justify-content-between mt-2">
+                  <Button variant="danger" onClick={closeTicket}>Chiudi ticket</Button>
+                  <Button variant="primary" onClick={handleReply}>Invia risposta</Button>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <h4>Ticket ricevuti</h4>
+          <Table striped hover responsive className="mt-3">
+            <thead>
+              <tr>
+                <th>Oggetto</th>
+                <th>Email</th>
+                <th>Stato</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tickets.map((t) => (
+                <tr key={t.id} style={{ cursor: "pointer" }} onClick={() => openTicket(t)}>
+                  <td>{t.subject}</td>
+                  <td>{t.email}</td>
+                  <td>
+                    <span className={`badge ${t.status === "open" ? "bg-success" : "bg-secondary"}`}>
+                      {t.status}
+                    </span>
+                  </td>
+                  <td>{new Date(t.createdAt.toDate()).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      );
+    };
+
   
 
   const renderPage = () => {
@@ -248,6 +377,7 @@ export default function AdminPanel() {
       case "users": return Users;
       case "couples": return Couples;
       case "expenses": return Expenses;
+      case "tickets": return <Tickets />;
       default: return null;
     }
   };

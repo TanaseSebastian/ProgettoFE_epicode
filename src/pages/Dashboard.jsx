@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "./firebase";                  
+import { db } from "../firebase";                  
 import {
   collection,
   query,
@@ -28,15 +28,15 @@ import {
   selectMonthlyData,
   selectAnnualData,
   selectCategories,
-  selectExpensesList,
-} from "./store/expensesSlice";
+} from "../store/expensesSlice";
+import { useNavigate } from "react-router-dom";
 
-import BalanceCard from "./components/BalanceCard";
-import PieChart    from "./components/PieChart";
-import BarChart    from "./components/BarChart";
-import LineChart   from "./components/LineChart";
-import ConsentModal     from "./components/ConsentModal";
-import MonthYearFilter   from "./components/MonthYearFilter";
+import BalanceCard from "../components/BalanceCard";
+import PieChart    from "../components/PieChart";
+import BarChart    from "../components/BarChart";
+import LineChart   from "../components/LineChart";
+import ConsentModal     from "../components/ConsentModal";
+import MonthYearFilter   from "../components/MonthYearFilter";
 
 Chart.register(
   ArcElement,
@@ -50,7 +50,7 @@ Chart.register(
   Legend
 );
 
-const Dashboard = ({ showExpenseForm }) => {
+const Dashboard = () => {
   /* ──────────────────────────── state “locali” ────────────────────────── */
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear,  setSelectedYear]  = useState(new Date().getFullYear());
@@ -61,6 +61,7 @@ const Dashboard = ({ showExpenseForm }) => {
 
   const [mostraConsenso, setMostraConsenso] = useState(false);
   const [coppiaId,        setCoppiaId]      = useState(null);
+  const navigate = useNavigate();
 
   /* ──────────────────────────── redux hooks ───────────────────────────── */
   const dispatch     = useDispatch();
@@ -68,7 +69,6 @@ const Dashboard = ({ showExpenseForm }) => {
   const monthlyData  = useSelector(selectMonthlyData);
   const annualData   = useSelector(selectAnnualData);
   const categories   = useSelector(selectCategories);
-  const expenses     = useSelector(selectExpensesList);
 
   /* ───────────────────────── consenso partner ─────────────────────────── */
   const accettaConsenso = async () => {
@@ -186,14 +186,20 @@ const Dashboard = ({ showExpenseForm }) => {
         setSelectedYear={setSelectedYear}
       />
 
-      {/* ─── pulsante aggiunta movimento ──────────────────────────────── */}
-      <div className="row mt-3">
+      {/* ─── pulsanti centrali ────────────────────────────────────────── */}
+      <div className="row mt-4">
         <div className="col text-center">
-          <button className="btn btn-primary" onClick={showExpenseForm}>
-            Aggiungi Entrata/Uscita
-          </button>
+          <div className="d-inline-flex gap-3 flex-wrap justify-content-center">
+            <button className="btn btn-primary" onClick={() => navigate("/new")}>
+              ➕ Aggiungi Entrata/Uscita
+            </button>
+            <button className="btn btn-outline-secondary" onClick={() => navigate("/movimenti")}>
+              📄 Vedi tutti i movimenti
+            </button>
+          </div>
         </div>
       </div>
+
 
       {/* ─── saldi ───────────────────────────────────────────────────── */}
       <div className="row mt-5">
@@ -226,67 +232,6 @@ const Dashboard = ({ showExpenseForm }) => {
       <BarChart  title="Spese Mensili"           data={createMonthlyBarChartData()} />
       <LineChart title="Entrate e Spese Annuali" data={createAnnualLineChartData()} />
       <BarChart  title="Saldo Mensile"           data={createMonthlyBalanceData()} />
-
-      {/* ─── lista movimenti ─────────────────────────────────────────── */}
-      <div className="row mt-5">
-        <div className="d-none d-md-block col-12">
-          <h4>Lista Movimenti</h4>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Utente</th><th>Data</th><th>Ora</th><th>Categoria</th>
-                <th>Tipo</th><th>Descrizione</th><th>Importo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((exp) => {
-                const dateObj = exp.timestamp.toDate();
-                const userName = exp.uid === currentUser?.uid ? currentUser?.name || "Utente 1" : partnerName;
-                return (
-                  <tr key={exp.id}>
-                    <td>{userName}{exp.shared && <span className="badge bg-info ms-2">Comune</span>}</td>
-                    <td>{dateObj.toLocaleDateString("it-IT")}</td>
-                    <td>{dateObj.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}</td>
-                    <td>{exp.category}</td>
-                    <td>{exp.type}</td>
-                    <td>{exp.description || "—"}</td>
-                    <td>{exp.amount.toFixed(2)} €</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* layout card su mobile */}
-        <div className="d-md-none col-12">
-          <h4>Lista Movimenti</h4>
-          {expenses.map((exp) => {
-            const dateObj = exp.timestamp.toDate();
-            const userName = exp.uid === currentUser?.uid ? currentUser?.name || "Utente 1" : partnerName;
-            const bg = exp.type === "Entrata" ? "rgba(75,192,192,0.2)" : "rgba(255,99,132,0.2)";
-            return (
-              <div key={exp.id} className="card mb-3" style={{ backgroundColor: bg }}>
-                <div className="card-body">
-                  <h5 className="card-title">
-                    {exp.type}: {exp.amount.toFixed(2)} €
-                  </h5>
-                  <p className="card-text">
-                    <strong>Utente:</strong> {userName}<br/>
-                    <strong>Categoria:</strong> {exp.category}<br/>
-                    <strong>Descrizione:</strong> {exp.description || "—"}
-                  </p>
-                  <p className="card-text">
-                    <small className="text-muted">
-                      {dateObj.toLocaleDateString("it-IT")} — {dateObj.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"})}
-                    </small>
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* ─── modal consenso dati ─────────────────────────────────────── */}
       <ConsentModal

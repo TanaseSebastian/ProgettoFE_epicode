@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
-import { db, auth } from "./firebase";
+import { db, auth } from "../firebase";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { toast } from "react-toastify";  // Mantieni solo `toast` per inviare notifiche
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = ({ onFormSubmit }) => {
   const [amount, setAmount] = useState("");
@@ -13,6 +14,7 @@ const ExpenseForm = ({ onFormSubmit }) => {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
   const [shared, setShared] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +51,7 @@ const ExpenseForm = ({ onFormSubmit }) => {
         setDate(new Date());
         setType("income");
         onFormSubmit();
+        navigate("/");
   
       } catch (error) {
         console.error("Errore nel salvataggio: ", error);
