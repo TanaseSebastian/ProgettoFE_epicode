@@ -134,7 +134,7 @@ function App() {
         />
 
         <Route
-          path="./pages/Register"
+          path="/register"
           element={!user ? <Register /> : <Navigate to={user.role === 'admin' ? "/admin" : "/"} />}
         />
       </Routes>

@@ -124,7 +124,7 @@ const Login = () => {
 
                       <a className="small text-muted" href="#!">Password dimenticata?</a>
                       <p className="mb-5 pb-lg-2" style={{ color: "#393f81" }}>
-                        Non hai un account? <Link to="./pages/Register" style={{ color: "#393f81" }}>Registrati qui</Link>
+                        Non hai un account? <Link to="/register" style={{ color: "#393f81" }}>Registrati qui</Link>
                       </p>
                       <a href="#!" className="small text-muted">Termini di utilizzo.</a>
                       <a href="#!" className="small text-muted">Politica sulla privacy</a>
